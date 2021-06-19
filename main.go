@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"flag"
 	// "time"
 
+	ma "github.com/multiformats/go-multiaddr"
 	// crypto "github.com/libp2p/go-libp2p-crypto"
 	// "github.com/libp2p/go-libp2p-crypto"
 	"github.com/libp2p/go-libp2p-core/crypto"
 	"github.com/textileio/go-threads/api/client"
 	"github.com/textileio/go-threads/core/thread"
 
-	db2 "github.com/textileio/go-threads/db"
+	// db2 "github.com/textileio/go-threads/db"
 	// "github.com/alecthomas/jsonschema"
 	"google.golang.org/grpc"
 )
@@ -28,9 +30,40 @@ type Person struct {
 
 func main() {
 	db, err := client.NewClient("127.0.0.1:6006", grpc.WithInsecure())
-	    if err != nil {
+	if err != nil {
         panic(err)
+	}
+
+	var nFlag = flag.Bool("info", false, "show current DB info")
+	flag.Parse()
+
+	if *nFlag {
+		dbs, errDbs := db.ListDBs(context.Background())
+		if errDbs != nil {
+			panic(errDbs)
 		}
+
+		for threadID := range dbs {
+			fmt.Println("thread", threadID)
+
+			dbInfo, errInfo := db.GetDBInfo(context.Background(), threadID)
+			if errInfo != nil {
+				panic(errInfo)
+			}
+			fmt.Println("addrs", dbInfo.Addrs)
+			fmt.Println("key", dbInfo.Key)
+
+			collections, errCol := db.ListCollections(context.Background(), threadID)
+			if errCol != nil {
+				panic(errCol)
+			}
+			for one := range collections {
+				fmt.Println("collection> ", one)
+			}
+
+		}
+		panic("done")
+	}
 
 	_, err7 := os.Stat("privkey")
 	if err7 != nil {
@@ -65,11 +98,12 @@ func main() {
 	myIdentity := thread.NewLibp2pIdentity(privateKey)
 	fmt.Println("identity", myIdentity.GetPublic())
 
-	threadToken, err3 := db.GetToken(context.Background(), myIdentity)
-	// _, err3 := db.GetToken(context.Background(), myIdentity)
+	// threadToken, err3 := db.GetToken(context.Background(), myIdentity)
+	_, err3 := db.GetToken(context.Background(), myIdentity)
 	if err3 != nil {
         panic(err3)
 		}
+	/*
 
 	thread_pub_key, err10 := threadToken.PubKey()
 	if err10 != nil {
@@ -100,35 +134,53 @@ func main() {
 
 	// threadID := thread.ID(string(data2))
 	threadID := thread.ID(data2)
-
-	/*
-	   on another computer
-	dbInfo, err := db.GetDBInfo(context.Background(), threadID)
-	err14 := db.NewDBFromAddr(context.Background(), dbInfo.Addrs[0], dbInfo.Key)
-	if err14 != nil {
-		panic(err14)
-	}
 	*/
 
-	fmt.Println("threadID", threadID)
 
-	/*
-	reflector := jsonschema.Reflector{}
-	mySchema := reflector.Reflect(&Person{}) // Generate a JSON Schema from a struct
+	// on another computer
+	// dbInfo, err := db.GetDBInfo(context.Background(), threadID)
+	// fmt.Println("addrs", dbInfo.Addrs)
+	// fmt.Println("key", dbInfo.Key)
+	// err14 := db.NewDBFromAddr(context.Background(), dbInfo.Addrs[0], dbInfo.Key)
+	// if err14 != nil {
+		// panic(err14)
+	// }
 
+	// fmt.Println("threadID", threadID)
 
-	err15 := db.NewCollection(context.Background(), threadID, db2.CollectionConfig{
-		Name:    "Persons",
-		Schema:  mySchema,
-		Indexes: []db2.Index{{
-			Path:   "name", // Value matches json tags
-			Unique: true, // Create a unique index on "name"
-		}},
-	})
-	if err15 != nil {
-		panic(err15)
+	// addr, err22 := ma.NewMultiaddr("/ip4/172.27.0.3/tcp/4006/p2p/12D3KooWQZUHsPQzcyzydWLcabNwKb9zhvgsYSfBwDTB3cZi33kT/thread/bafktrg35keacmar4neyegxcinck77z3scjctjmipkpkovyzi6g52coq")
+
+	// addr, err22 := ma.NewMultiaddr("/ip4/100.67.149.7/tcp/4006/p2p/12D3KooWQZUHsPQzcyzydWLcabNwKb9zhvgsYSfBwDTB3cZi33kT/thread/bafktrg35keacmar4neyegxcinck77z3scjctjmipkpkovyzi6g52coq")
+	addr, err22 := ma.NewMultiaddr("/ip4/100.67.149.7/tcp/4006/p2p/12D3KooWQZUHsPQzcyzydWLcabNwKb9zhvgsYSfBwDTB3cZi33kT/thread/bafktrg35keacmar4neyegxcinck77z3scjctjmipkpkovyzi6g52coq")
+	if err22 != nil {
+		panic(err22)
 	}
-	*/
+
+	key, err21 := thread.KeyFromString("bm66r4d64fbrsrzsjpyjn7pwqznr3zvxbbm3w5mtsr6mcn5lymi3oxtz5kklur4r274xvbbimqbcjzcdegnigeyujq5tdreonqkyhv3y")
+	if err21 != nil {
+		panic(err21)
+	}
+
+	err20 := db.NewDBFromAddr(context.Background(), addr, key)
+	if err20 != nil {
+		panic(err20)
+	}
+
+
+	// reflector := jsonschema.Reflector{}
+	// mySchema := reflector.Reflect(&Person{}) // Generate a JSON Schema from a struct
+
+	// err15 := db.NewCollection(context.Background(), threadID, db2.CollectionConfig{
+	// 	Name:    "Persons",
+	// 	Schema:  mySchema,
+	// 	Indexes: []db2.Index{{
+	// 		Path:   "name", // Value matches json tags
+	// 		Unique: true, // Create a unique index on "name"
+	// 	}},
+	// })
+	// if err15 != nil {
+	// 	panic(err15)
+	// }
 
 	   /*
 err := db.UpdateCollection(context.Background(), myThreadID, db.CollectionConfig{
@@ -156,14 +208,19 @@ err := db.UpdateCollection(context.Background(), myThreadID, db.CollectionConfig
 	fmt.Println("> Success!", ids[0])
 	*/
 
-	query := db2.Where("name").Eq("Alice")
-	results, err16 := db.Find(context.Background(), threadID, "Persons", query, &Person{})
-	if err16 != nil {
-		panic(err16)
-	}
+
+	// query := db2.Where("name").Eq("Alice")
+	// results, err16 := db.Find(context.Background(), threadID, "Persons", query, &Person{})
+	// if err16 != nil {
+	// 	panic(err16)
+	// }
 
 
-	alice := results.([]*Person)
+	// alice := results.([]*Person)
 
-	fmt.Println("> Success!", alice[0])
+	// fmt.Println("len", len(alice))
+
+	// if len(alice) > 0 {
+	// 	fmt.Println("> Success!", alice[0])
+	// }
 }
