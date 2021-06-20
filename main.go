@@ -41,14 +41,16 @@ func getThread(name string, db0 *client.Client, dbs map[thread.ID]db2.Info) *thr
 }
 
 func main() {
+	var nFlag = flag.Int("c", 1, "computer number (1 or 2)")
+	flag.Parse()
+
+	// CLIENT
 	db, err := client.NewClient("127.0.0.1:6006", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
 
-	var nFlag = flag.Int("c", 1, "computer number (1 or 2)")
-	flag.Parse()
-
+	// Generate private key and save to file
 	_, err7 := os.Stat("privkey")
 	if err7 != nil {
 		fmt.Println("generating key")
@@ -165,6 +167,7 @@ func main() {
 		}
 
 		// info for computer 2
+		fmt.Println("\n\nINFO FOR COMPUTER 2\n")
 		dbs, errDbs2 := db.ListDBs(context.Background())
 		if errDbs2 != nil {
 			panic(errDbs2)
@@ -179,15 +182,6 @@ func main() {
 			}
 			fmt.Println("addrs", dbInfo.Addrs)
 			fmt.Println("key", dbInfo.Key)
-
-			collections, errCol := db.ListCollections(context.Background(), threadID)
-			if errCol != nil {
-				panic(errCol)
-			}
-			for one := range collections {
-				fmt.Println("collection> ", one)
-			}
-
 		}
 	} else {
 		// computer 2
