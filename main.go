@@ -9,16 +9,12 @@ import (
 	"os"
 	"time"
 
-	ma "github.com/multiformats/go-multiaddr"
-	// crypto "github.com/libp2p/go-libp2p-crypto"
-	// "github.com/libp2p/go-libp2p-crypto"
+	"github.com/alecthomas/jsonschema"
 	"github.com/libp2p/go-libp2p-core/crypto"
+	ma "github.com/multiformats/go-multiaddr"
 	"github.com/textileio/go-threads/api/client"
 	"github.com/textileio/go-threads/core/thread"
-
 	db2 "github.com/textileio/go-threads/db"
-	// "github.com/textileio/go-threads/db/options"
-	"github.com/alecthomas/jsonschema"
 	"google.golang.org/grpc"
 )
 
@@ -86,7 +82,6 @@ func main() {
 	myIdentity := thread.NewLibp2pIdentity(privateKey)
 	fmt.Println("identity", myIdentity.GetPublic())
 
-	// threadToken, err3 := db.GetToken(context.Background(), myIdentity)
 	_, err3 := db.GetToken(context.Background(), myIdentity)
 	if err3 != nil {
 		panic(err3)
@@ -142,73 +137,6 @@ func main() {
 				panic(err15)
 			}
 		}
-
-		/*
-
-			thread_pub_key, err10 := threadToken.PubKey()
-			if err10 != nil {
-				panic(err10)
-			}
-			fmt.Println("thread token", thread_pub_key)
-
-			_, err12 := os.Stat("threadid")
-			if err12 != nil {
-				fmt.Println("new thread")
-				threadID := thread.NewIDV1(thread.Raw, 32)
-
-				err11 := ioutil.WriteFile("threadid", threadID.Bytes(), 0600)
-				if err11 != nil {
-					panic(err11)
-				}
-
-				err2 := db.NewDB(context.Background(), threadID)
-				if err2 != nil {
-					panic(err2)
-				}
-			}
-
-			data2, err13 := ioutil.ReadFile("threadid")
-			if err13 != nil {
-				panic(err13)
-			}
-
-			// threadID := thread.ID(string(data2))
-			threadID := thread.ID(data2)
-		*/
-
-		// on another computer
-		// dbInfo, err := db.GetDBInfo(context.Background(), threadID)
-		// fmt.Println("addrs", dbInfo.Addrs)
-		// fmt.Println("key", dbInfo.Key)
-		// err14 := db.NewDBFromAddr(context.Background(), dbInfo.Addrs[0], dbInfo.Key)
-		// if err14 != nil {
-		// panic(err14)
-		// }
-
-		// fmt.Println("threadID", threadID)
-
-		// addr, err22 := ma.NewMultiaddr("/ip4/172.27.0.3/tcp/4006/p2p/12D3KooWQZUHsPQzcyzydWLcabNwKb9zhvgsYSfBwDTB3cZi33kT/thread/bafktrg35keacmar4neyegxcinck77z3scjctjmipkpkovyzi6g52coq")
-
-		// addr, err22 := ma.NewMultiaddr("/ip4/100.67.149.7/tcp/4006/p2p/12D3KooWQZUHsPQzcyzydWLcabNwKb9zhvgsYSfBwDTB3cZi33kT/thread/bafktrg35keacmar4neyegxcinck77z3scjctjmipkpkovyzi6g52coq")
-
-		// computer 2
-		/*
-
-		 */
-
-		/*
-			err := db.UpdateCollection(context.Background(), myThreadID, db.CollectionConfig{
-			    Name:    "Persons",
-			    Schema:  mySchema,
-			    Indexes: []db.Index{{
-			        Path:   "name",
-			        Unique: true,
-			    },
-			    {
-			        Path: "created_at", // Add an additional index on "created_at"
-			    }},
-				})
-		*/
 
 		query := db2.Where("name").Eq("Alice")
 		results, err16 := db.Find(context.Background(), *threadID, "Persons", query, &Person{})
