@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/jsonschema"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/libp2p/go-libp2p-core/crypto"
 	ma "github.com/multiformats/go-multiaddr"
 	"github.com/textileio/go-threads/api/client"
@@ -41,6 +42,12 @@ func getThread(name string, db0 *client.Client, dbs map[thread.ID]db2.Info) *thr
 }
 
 func main() {
+	logging.SetupLogging(logging.Config{
+		Format: logging.ColorizedOutput,
+		Stdout: true,
+		Level:  logging.LevelDebug,
+	})
+
 	var nFlag = flag.Int("c", 1, "computer number (1 or 2)")
 	flag.Parse()
 

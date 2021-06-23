@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/alecthomas/jsonschema v0.0.0-20191017121752-4bb6e3fae4f2 // indirect
+	github.com/ipfs/go-log/v2 v2.1.2-0.20200609205458-f8d20c392cb7 // indirect
 	github.com/libp2p/go-libp2p-core v0.6.1 // indirect
 	github.com/libp2p/go-libp2p-crypto v0.1.0
 	github.com/multiformats/go-multiaddr v0.2.2 // indirect
