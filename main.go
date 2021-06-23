@@ -48,7 +48,8 @@ func main() {
 		Level:  logging.LevelDebug,
 	})
 
-	var nFlag = flag.Int("c", 1, "computer number (1 or 2)")
+	var flagAddr = flag.String("addr", "", "addr")
+	var flagKey = flag.String("key", "", "key")
 	flag.Parse()
 
 	// CLIENT
@@ -96,8 +97,9 @@ func main() {
 		panic(err3)
 	}
 
-	// computer 1
-	if *nFlag == 1 {
+	if *flagAddr == "" && *flagKey == "" {
+		fmt.Println("computer 1")
+
 		dbs, errDbs := db.ListDBs(context.Background())
 		if errDbs != nil {
 			panic(errDbs)
@@ -192,12 +194,14 @@ func main() {
 		}
 	} else {
 		// computer 2
-		addr, err22 := ma.NewMultiaddr("/ip4/100.67.149.7/tcp/4006/p2p/12D3KooWEjMr3DccgP4tvUvpLEgfi7XEDDF1pxQ9dZimWLQPS67c/thread/bafk336kt326667ejcrpupk772wyfpjoik35wicwqyyn77d3fabnzdly")
+		fmt.Println("computer 2")
+
+		addr, err22 := ma.NewMultiaddr(*flagAddr)
 		if err22 != nil {
 			panic(err22)
 		}
 
-		key, err21 := thread.KeyFromString("bzfv6hms2bu4pqeedo333x3klnqcisszzqavq4mdquvm5sjqmwlvwtfhxe746yaoskqnxxa5hh3wwtm36otd3mkihwyteb7qe6ptgnky")
+		key, err21 := thread.KeyFromString(*flagKey)
 		if err21 != nil {
 			panic(err21)
 		}
